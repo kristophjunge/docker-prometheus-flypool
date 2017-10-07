@@ -116,8 +116,6 @@ func metrics(w http.ResponseWriter, r *http.Request) {
     var jsonString string
     var err error
 
-    log.Print(config)
-
     for _, miner := range config {
         up = 1
 
