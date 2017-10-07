@@ -1,0 +1,11 @@
+version: '2'
+
+services:
+  prometheus_flypool:
+    container_name: prometheus_flypool
+    build: .
+    ports:
+      - "9203:9203"
+    volumes:
+      - "./config.json:/go/config.json"
+      - "/etc/ssl/certs:/etc/ssl/certs" # Needed for HTTPS calls
