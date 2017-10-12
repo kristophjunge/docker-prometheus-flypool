@@ -19,6 +19,7 @@ var config Config
 type Config []struct {
    ApiUrl string `json:"apiUrl"`
    AccountId string `json:"accountId"`
+   Precision int64 `json:"precision"`
 }
 
 type FlyPoolMinerStatistics struct {
@@ -41,19 +42,19 @@ type FlyPoolMinerStatistics struct {
     } `json:"data"`
 }
 
-func floatToString(value float64, precision int) string {
-    return strconv.FormatFloat(value, 'f', precision, 64)
+func floatToString(value float64, precision int64) string {
+    return strconv.FormatFloat(value, 'f', int(precision), 64)
 }
 
 func integerToString(value int) string {
     return strconv.Itoa(value)
 }
 
-func convertBaseUnits(value string, precision int) string {
-    if (len(value) < precision) {
-        value = strings.Repeat("0", precision - len(value)) + value;
+func convertBaseUnits(value string, precision int64) string {
+    if (len(value) < int(precision)) {
+        value = strings.Repeat("0", int(precision) - len(value)) + value;
     }
-    return value[:len(value)-precision+1] + "." + value[len(value)-precision+1:]
+    return value[:len(value)-int(precision)+1] + "." + value[len(value)-int(precision)+1:]
 }
 
 func formatValue(key string, meta string, value string) string {
@@ -145,14 +146,14 @@ func metrics(w http.ResponseWriter, r *http.Request) {
         io.WriteString(w, formatValue("flypool_hashrate_current", "apiUrl=\"" + miner.ApiUrl + "\",account=\"" + miner.AccountId + "\"", floatToString(jsonData.Data.CurrentHashrate, 6)))
         io.WriteString(w, formatValue("flypool_hashrate_average", "apiUrl=\"" + miner.ApiUrl + "\",account=\"" + miner.AccountId + "\"", floatToString(jsonData.Data.AverageHashrate, 6)))
         io.WriteString(w, formatValue("flypool_active_workers", "apiUrl=\"" + miner.ApiUrl + "\",account=\"" + miner.AccountId + "\"", integerToString(jsonData.Data.ActiveWorkers)))
-        io.WriteString(w, formatValue("flypool_balance_unpaid", "apiUrl=\"" + miner.ApiUrl + "\",account=\"" + miner.AccountId + "\"", convertBaseUnits(integerToString(jsonData.Data.Unpaid), 19)))
-        io.WriteString(w, formatValue("flypool_balance_unconfirmed", "apiUrl=\"" + miner.ApiUrl + "\",account=\"" + miner.AccountId + "\"", convertBaseUnits(integerToString(jsonData.Data.Unconfirmed), 19)))
+        io.WriteString(w, formatValue("flypool_balance_unpaid", "apiUrl=\"" + miner.ApiUrl + "\",account=\"" + miner.AccountId + "\"", convertBaseUnits(integerToString(jsonData.Data.Unpaid), miner.Precision)))
+        io.WriteString(w, formatValue("flypool_balance_unconfirmed", "apiUrl=\"" + miner.ApiUrl + "\",account=\"" + miner.AccountId + "\"", convertBaseUnits(integerToString(jsonData.Data.Unconfirmed), miner.Precision)))
         io.WriteString(w, formatValue("flypool_shares_valid", "apiUrl=\"" + miner.ApiUrl + "\",account=\"" + miner.AccountId + "\"", integerToString(jsonData.Data.ValidShares)))
         io.WriteString(w, formatValue("flypool_shares_invalid", "apiUrl=\"" + miner.ApiUrl + "\",account=\"" + miner.AccountId + "\"", integerToString(jsonData.Data.InvalidShares)))
         io.WriteString(w, formatValue("flypool_shares_stale", "apiUrl=\"" + miner.ApiUrl + "\",account=\"" + miner.AccountId + "\"", integerToString(jsonData.Data.StaleShares)))
-        io.WriteString(w, formatValue("flypool_coins_per_min", "apiUrl=\"" + miner.ApiUrl + "\",account=\"" + miner.AccountId + "\"", floatToString(jsonData.Data.CoinsPerMin, 19)))
-        io.WriteString(w, formatValue("flypool_usd_per_min", "apiUrl=\"" + miner.ApiUrl + "\",account=\"" + miner.AccountId + "\"", floatToString(jsonData.Data.UsdPerMin, 19)))
-        io.WriteString(w, formatValue("flypool_btc_per_min", "apiUrl=\"" + miner.ApiUrl + "\",account=\"" + miner.AccountId + "\"", floatToString(jsonData.Data.BtcPerMin, 19)))
+        io.WriteString(w, formatValue("flypool_coins_per_min", "apiUrl=\"" + miner.ApiUrl + "\",account=\"" + miner.AccountId + "\"", floatToString(jsonData.Data.CoinsPerMin, miner.Precision)))
+        io.WriteString(w, formatValue("flypool_usd_per_min", "apiUrl=\"" + miner.ApiUrl + "\",account=\"" + miner.AccountId + "\"", floatToString(jsonData.Data.UsdPerMin, miner.Precision)))
+        io.WriteString(w, formatValue("flypool_btc_per_min", "apiUrl=\"" + miner.ApiUrl + "\",account=\"" + miner.AccountId + "\"", floatToString(jsonData.Data.BtcPerMin, miner.Precision)))
     }
 }
 

@@ -1,10 +1,12 @@
 [
   {
-    "apiUrl": "",
-    "accountId": ""
+    "apiUrl": "https://api.ethermine.org",
+    "accountId": "",
+    "precision": 19
   },
   {
-    "apiUrl": "",
-    "accountId": ""
+    "apiUrl": "https://api-zcash.flypool.org",
+    "accountId": "",
+    "precision": 9
   }
 ]
